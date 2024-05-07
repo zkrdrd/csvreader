@@ -3,34 +3,28 @@ package csvreader
 import (
 	"io"
 	"os"
-	"strings"
 )
 
-const bufferSizeForFileRead = 1024
+const bufferSizeForFileRead = 1
 
 // Чтение файла csv
 func Read(FilenameFrom string, FilenameTo string) error {
 
 	var buffer = make([]byte, bufferSizeForFileRead)
 
-	dataFileFrom, err := os.ReadFile(FilenameFrom) //os.Open
+	dataFileFrom, err := os.OpenFile(FilenameFrom, os.O_RDONLY, 0644)
 	if err != nil {
 		return err
 	}
+	defer dataFileFrom.Close()
 
 	dataFileTo, err := os.OpenFile(FilenameTo, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
-	defer func() error {
-		if err := dataFileTo.Close(); err != nil {
-			return err
-		}
-		return nil
-	}()
+	defer dataFileTo.Close()
 
-	readFrom := strings.NewReader(string(dataFileFrom))
-	if _, err := io.CopyBuffer(dataFileTo, readFrom, buffer); err != nil {
+	if _, err := io.CopyBuffer(dataFileTo, dataFileFrom, buffer); err != nil {
 		return err
 	}
 

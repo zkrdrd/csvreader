@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	if err := csvreader.Read("file.csv", "FileTo.txt"); err != nil {
+	if err := csvreader.Read("FileFrom.csv", "FileTo.txt"); err != nil {
 		fmt.Println(err)
 	}
 }
